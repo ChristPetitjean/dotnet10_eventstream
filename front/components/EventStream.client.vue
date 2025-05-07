@@ -1,0 +1,61 @@
+<script setup lang="ts">
+import { ref } from 'vue';
+
+let evtSource: EventSource;
+const messages = ref<{ summary: string; date: string; temperatureC: number; temperatureF: number }[]>([]);
+
+const closeConnection = () => {
+  evtSource.close();
+  console.log('EventSource connection closed');
+};
+
+const startListening = () => {
+  evtSource = new EventSource('http://localhost:5149/stream');
+  evtSource.addEventListener('weatherforecast', (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (messages.value.length >= 6) {
+        messages.value.pop(); // Remove the oldest message if the list exceeds 20 items
+      }
+      messages.value.unshift(data); // Insert the new message at the beginning of the list
+    } catch (error) {
+      console.error('Invalid JSON received:', event.data);
+    }
+  });
+};
+
+onBeforeUnmount(() => {
+  closeConnection();
+});
+</script>
+
+<template>
+  <div class="p-4 space-y-4">
+    <div class="flex space-x-4">
+      <button @click="closeConnection" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">Close Connection</button>
+      <button @click="startListening" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">Start Listening</button>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-800">Server-Sent Events</h1>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div v-for="(message, index) in messages" :key="index" class="p-2 bg-gray-100 rounded shadow">
+        <MessageDisplay class="animate-highlight" :message="message" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<style>
+/* Ajoutez une animation de halo lumineux */
+@keyframes highlight {
+  0% {
+    box-shadow: 0 0 10px 4px rgba(59, 130, 246, 0.5); /* Blue glow */
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); /* Fade out */
+  }
+}
+
+.animate-highlight {
+  animation: highlight 1s ease-out;
+}
+</style>
