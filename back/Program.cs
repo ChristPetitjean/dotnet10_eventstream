@@ -1,6 +1,5 @@
-using System.Net.ServerSentEvents;
 using EventStreamBrowser.Services;
-using EventStreamBrowser.Endpoints; // Add this for StreamHandler
+using EventStreamBrowser.EndpointHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +20,8 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Use the cookie middleware
-app.UseCookieMiddleware();
+// Use the UseUserNameIdentifierClaims middleware
+app.UseMiddleware<UserNameIdentifierClaimsMiddleware>();
 
 // Configure the HTTP request pipeline.
 app.MapGet("/stream", StreamHandler.HandleStream);

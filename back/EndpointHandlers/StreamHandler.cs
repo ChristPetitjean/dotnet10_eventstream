@@ -1,10 +1,11 @@
 using System.Net.ServerSentEvents;
 using System.Runtime.CompilerServices;
 using System.Security.Claims;
+using System.Threading.Channels;
 using EventStreamBrowser.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EventStreamBrowser.Endpoints;
+namespace EventStreamBrowser.EndpointHandlers;
 
 public class StreamHandler
 {
@@ -18,7 +19,7 @@ public class StreamHandler
         string? clientId = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
         if (string.IsNullOrEmpty(clientId))
         {
-            logger.LogWarning("Client ID is missing in the request.");
+            logger.LogWarning("Client ID is missing in the request. Cannot establish SSE connection.");
             return Results.BadRequest("Client ID is missing.");
         }
 
@@ -40,7 +41,7 @@ public class StreamHandler
         [EnumeratorCancellation] CancellationToken cancellationToken,
         ILogger logger,
         string? clientId,
-        System.Threading.Channels.Channel<WeatherForecast>? channel)
+        Channel<WeatherForecast>? channel)
     {
         logger.LogInformation("Starting SSE stream for client {ClientId}.", clientId);
 

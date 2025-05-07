@@ -3,7 +3,7 @@ using System.Threading.Channels;
 
 namespace EventStreamBrowser.Services;
 
-public class ChannelFactory
+public class ChannelFactory(ILogger<ChannelFactory> logger)
 {
     private readonly ConcurrentDictionary<string, Channel<WeatherForecast>> _channels = new();
 
@@ -29,11 +29,11 @@ public class ChannelFactory
         {
             channel.Writer.TryComplete();
             GC.SuppressFinalize(channel); // Suppress finalization for the channel
-            Console.WriteLine($"Channel for client {clientId} removed.");
+            logger.LogInformation("Channel for client {clientId} removed.", clientId);
         }
         else
         {
-            Console.WriteLine($"Channel for client {clientId} not found.");
+            logger.LogWarning("Channel for client {clientId} not found.", clientId);
         }
     }
 }

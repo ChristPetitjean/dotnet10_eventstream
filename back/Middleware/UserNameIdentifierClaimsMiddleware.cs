@@ -1,9 +1,8 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 
-public class CookieMiddleware(RequestDelegate next, ILogger<CookieMiddleware> logger)
+public class UserNameIdentifierClaimsMiddleware(RequestDelegate next, ILogger<UserNameIdentifierClaimsMiddleware> logger)
 {
-    private readonly ILogger<CookieMiddleware> _logger = logger;
+    private readonly ILogger<UserNameIdentifierClaimsMiddleware> _logger = logger;
     private readonly RequestDelegate _next = next;
     private const string CookieName = "ClientId";
 
