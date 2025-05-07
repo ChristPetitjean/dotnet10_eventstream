@@ -16,7 +16,7 @@ const startListening = () => {
       const data = JSON.parse(event.data);
       data.id = crypto.randomUUID(); // Generate a unique ID for each message
       if (messages.value.length >= 6) {
-        messages.value.shift(); // Remove the oldest message if the list exceeds 6 items
+        messages.value = []; // Remove the oldest message if the list exceeds 6 items
       }
       messages.value.push(data); // Insert the new message at the beginning of the list
     } catch (error) {
@@ -42,7 +42,7 @@ onBeforeUnmount(() => {
       <button @click="clearMessages" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Clear Messages</button>
     </div>
     <h1 class="text-2xl font-bold text-gray-800">Server-Sent Events</h1>
-    <transition-group name="fade" tag="div" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <transition-group name="fade" tag="div" class="grid grid-cols-4 gap-4">
       <div v-for="message in messages" :key="message.id" class="p-2 bg-gray-100 rounded shadow">
         <MessageDisplay class="animate-highlight" :message="message" />
       </div>
